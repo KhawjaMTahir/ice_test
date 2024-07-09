@@ -4,6 +4,7 @@ import (
 	"interview/pkg/controllers"
 	"interview/pkg/db"
 	repo "interview/pkg/repository"
+	service "interview/pkg/service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -15,6 +16,7 @@ func main() {
 	ginEngine := gin.Default()
 
 	cartRepository := repo.NewCartRepository(database)
+	cartService := service.NewCartService(cartRepository)
 
 	var taxController controllers.TaxController
 	ginEngine.GET("/", taxController.ShowAddItemForm)
