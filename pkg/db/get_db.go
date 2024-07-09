@@ -19,5 +19,7 @@ func GetDatabase() *gorm.DB {
 		panic("failed to connect database")
 	}
 
+	MigrateDatabase(db)
+
 	return db
 }

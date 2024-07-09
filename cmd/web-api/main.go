@@ -1,16 +1,20 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"interview/pkg/controllers"
 	"interview/pkg/db"
+	repo "interview/pkg/repository"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	db.MigrateDatabase()
+	database := db.GetDatabase()
 
 	ginEngine := gin.Default()
+
+	cartRepository := repo.NewCartRepository(database)
 
 	var taxController controllers.TaxController
 	ginEngine.GET("/", taxController.ShowAddItemForm)
