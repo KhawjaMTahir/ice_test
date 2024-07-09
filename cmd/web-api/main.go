@@ -18,10 +18,11 @@ func main() {
 	cartRepository := repo.NewCartRepository(database)
 	cartService := service.NewCartService(cartRepository)
 
-	var taxController controllers.TaxController
-	ginEngine.GET("/", taxController.ShowAddItemForm)
-	ginEngine.POST("/add-item", taxController.AddItem)
-	ginEngine.GET("/remove-cart-item", taxController.DeleteCartItem)
+	cartController := controllers.NewCartController(cartService)
+
+	ginEngine.GET("/", cartController.ShowAddItemForm)
+	ginEngine.POST("/add-item", cartController.AddItem)
+	ginEngine.GET("/remove-cart-item", cartController.DeleteCartItem)
 	srv := &http.Server{
 		Addr:    ":8088",
 		Handler: ginEngine,
