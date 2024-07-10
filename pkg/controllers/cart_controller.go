@@ -9,15 +9,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type CartControllerInterface interface {
-	ShowAddItemForm(c *gin.Context)
-	AddItem(c *gin.Context)
-	DeleteCartItem(c *gin.Context)
-}
+type (
+	CartControllerInterface interface {
+		ShowAddItemForm(c *gin.Context)
+		AddItem(c *gin.Context)
+		DeleteCartItem(c *gin.Context)
+	}
 
-type CartController struct {
-	cartService service.CartServiceInterface
-}
+	CartController struct {
+		cartService service.CartServiceInterface
+	}
+)
 
 func NewCartController(cartService service.CartServiceInterface) CartControllerInterface {
 	return &CartController{cartService: cartService}

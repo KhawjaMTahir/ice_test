@@ -6,19 +6,21 @@ import (
 	"gorm.io/gorm"
 )
 
-type CartRepositoryInterface interface {
-	GetCartBySessionID(sessionID string) (*entity.CartEntity, error)
-	CreateCart(cart *entity.CartEntity) error
-	GetCartItemByCartIDAndProductName(cartID uint, productName string) (*entity.CartItem, error)
-	CreateCartItem(cartItem *entity.CartItem) error
-	UpdateCartItem(cartItem *entity.CartItem) error
-	DeleteCartItem(cartItemID int, cartID uint) error
-	GetCartItemsByCartID(cartID uint) ([]entity.CartItem, error)
-}
+type (
+	CartRepositoryInterface interface {
+		GetCartBySessionID(sessionID string) (*entity.CartEntity, error)
+		CreateCart(cart *entity.CartEntity) error
+		GetCartItemByCartIDAndProductName(cartID uint, productName string) (*entity.CartItem, error)
+		CreateCartItem(cartItem *entity.CartItem) error
+		UpdateCartItem(cartItem *entity.CartItem) error
+		DeleteCartItem(cartItemID int, cartID uint) error
+		GetCartItemsByCartID(cartID uint) ([]entity.CartItem, error)
+	}
 
-type CartRepository struct {
-	db *gorm.DB
-}
+	CartRepository struct {
+		db *gorm.DB
+	}
+)
 
 func NewCartRepository(db *gorm.DB) CartRepositoryInterface {
 	return &CartRepository{db: db}

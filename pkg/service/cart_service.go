@@ -16,20 +16,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type CartServiceInterface interface {
-	GetCartData(c *gin.Context)
-	AddItemToCart(c *gin.Context)
-	DeleteCartItem(c *gin.Context)
-}
-
-type CartService struct {
-	repo repo.CartRepositoryInterface
-}
-
-func NewCartService(repo repo.CartRepositoryInterface) CartServiceInterface {
-	return &CartService{repo: repo}
-}
-
 var ItemPriceMapping = map[string]float64{
 	"shoe":  100,
 	"purse": 200,
@@ -37,19 +23,27 @@ var ItemPriceMapping = map[string]float64{
 	"watch": 300,
 }
 
-type CartItemForm struct {
-	Product  string `form:"product"   binding:"required"`
-	Quantity string `form:"quantity"  binding:"required"`
-}
+type (
+	CartServiceInterface interface {
+		GetCartData(c *gin.Context)
+		AddItemToCart(c *gin.Context)
+		DeleteCartItem(c *gin.Context)
+	}
 
-func (s *CartService) GetCartData(c *gin.Context) {
+	CartItemForm struct {
+		Product  string `form:"product"   binding:"required"`
+		Quantity string `form:"quantity"  binding:"required"`
+	}
+)
+
+func (s *service) GetCartData(c *gin.Context) {
 	data := map[string]interface{}{
 		"Error": c.Query("error"),
 	}
 
 	cookie, err := c.Request.Cookie("ice_session_id")
 	if err == nil {
-		data["CartItems"] = GetCartItemData(s.repo, cookie.Value)
+		data["CartItems"] = GetCartItemData(s.repository, cookie.Value)
 	}
 
 	html, err := RenderTemplate(data)
@@ -63,11 +57,11 @@ func (s *CartService) GetCartData(c *gin.Context) {
 	c.String(200, html)
 }
 
-func (s *CartService) AddItemToCart(c *gin.Context) {
+func (s *service) AddItemToCart(c *gin.Context) {
 	cookie, _ := c.Request.Cookie("ice_session_id")
 
 	var isCartNew bool
-	cartEntity, err := s.repo.GetCartBySessionID(cookie.Value)
+	cartEntity, err := s.repository.GetCartBySessionID(cookie.Value)
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			c.Redirect(302, "/")
@@ -78,7 +72,7 @@ func (s *CartService) AddItemToCart(c *gin.Context) {
 			SessionID: cookie.Value,
 			Status:    entity.CartOpen,
 		}
-		if err := s.repo.CreateCart(cartEntity); err != nil {
+		if err := s.repository.CreateCart(cartEntity); err != nil {
 			c.Redirect(302, "/")
 			return
 		}
@@ -110,12 +104,12 @@ func (s *CartService) AddItemToCart(c *gin.Context) {
 			Quantity:    int(quantity),
 			Price:       item * float64(quantity),
 		}
-		if err := s.repo.CreateCartItem(cartItemEntity); err != nil {
+		if err := s.repository.CreateCartItem(cartItemEntity); err != nil {
 			c.Redirect(302, "/")
 			return
 		}
 	} else {
-		cartItemEntity, err = s.repo.GetCartItemByCartIDAndProductName(cartEntity.ID, addItemForm.Product)
+		cartItemEntity, err = s.repository.GetCartItemByCartIDAndProductName(cartEntity.ID, addItemForm.Product)
 		if err != nil {
 			if !errors.Is(err, gorm.ErrRecordNotFound) {
 				c.Redirect(302, "/")
@@ -127,14 +121,14 @@ func (s *CartService) AddItemToCart(c *gin.Context) {
 				Quantity:    int(quantity),
 				Price:       item * float64(quantity),
 			}
-			if err := s.repo.CreateCartItem(cartItemEntity); err != nil {
+			if err := s.repository.CreateCartItem(cartItemEntity); err != nil {
 				c.Redirect(302, "/")
 				return
 			}
 		} else {
 			cartItemEntity.Quantity += int(quantity)
 			cartItemEntity.Price += item * float64(quantity)
-			if err := s.repo.UpdateCartItem(cartItemEntity); err != nil {
+			if err := s.repository.UpdateCartItem(cartItemEntity); err != nil {
 				c.Redirect(302, "/")
 				return
 			}
@@ -144,7 +138,7 @@ func (s *CartService) AddItemToCart(c *gin.Context) {
 	c.Redirect(302, "/")
 }
 
-func (s *CartService) DeleteCartItem(c *gin.Context) {
+func (s *service) DeleteCartItem(c *gin.Context) {
 	cartItemIDString := c.Query("cart_item_id")
 	if cartItemIDString == "" {
 		c.Redirect(302, "/")
@@ -153,7 +147,7 @@ func (s *CartService) DeleteCartItem(c *gin.Context) {
 
 	cookie, _ := c.Request.Cookie("ice_session_id")
 
-	cartEntity, err := s.repo.GetCartBySessionID(cookie.Value)
+	cartEntity, err := s.repository.GetCartBySessionID(cookie.Value)
 	if err != nil {
 		c.Redirect(302, "/")
 		return
@@ -165,7 +159,7 @@ func (s *CartService) DeleteCartItem(c *gin.Context) {
 		return
 	}
 
-	if err := s.repo.DeleteCartItem(cartItemID, cartEntity.ID); err != nil {
+	if err := s.repository.DeleteCartItem(cartItemID, cartEntity.ID); err != nil {
 		c.Redirect(302, "/")
 		return
 	}
