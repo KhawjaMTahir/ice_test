@@ -20,7 +20,7 @@ func main() {
 	cartRepository := repo.NewCartRepository(database)
 
 	// Initialize services
-	cartService := services.NewCartService(cartRepository)
+	cartService := services.NewService(cartRepository)
 
 	// Initialize controller
 	cartController := controllers.NewCartController(cartService)
