@@ -3,30 +3,36 @@ package main
 import (
 	"interview/pkg/controllers"
 	"interview/pkg/db"
+	"interview/pkg/middleware"
 	repo "interview/pkg/repository"
-	service "interview/pkg/service"
-	"net/http"
+	services "interview/pkg/service"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	r := gin.Default()
+
+	// Initialize database
 	database := db.GetDatabase()
 
-	ginEngine := gin.Default()
-
+	// Initialize repository
 	cartRepository := repo.NewCartRepository(database)
-	cartService := service.NewCartService(cartRepository)
 
+	// Initialize services
+	cartService := services.NewCartService(cartRepository)
+
+	// Initialize controller
 	cartController := controllers.NewCartController(cartService)
 
-	ginEngine.GET("/", cartController.ShowAddItemForm)
-	ginEngine.POST("/add-item", cartController.AddItem)
-	ginEngine.GET("/remove-cart-item", cartController.DeleteCartItem)
-	srv := &http.Server{
-		Addr:    ":8088",
-		Handler: ginEngine,
-	}
+	// Apply middleware
+	r.Use(middleware.SessionMiddleware())
 
-	srv.ListenAndServe()
+	// Define routes
+	r.GET("/", cartController.ShowAddItemForm)
+	r.POST("/add-item", cartController.AddItem)
+	r.GET("/remove-cart-item", cartController.DeleteCartItem)
+
+	// Run the server
+	r.Run(":8088")
 }
