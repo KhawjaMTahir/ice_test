@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/joho/godotenv"
 )
@@ -16,8 +17,14 @@ type Config struct {
 }
 
 func LoadConfig() Config {
+	rootDir := filepath.Join("..", "..")
+	err := os.Chdir(rootDir)
+	if err != nil {
+		log.Fatalf("Error changing working directory: %v", err)
+	}
+
 	// Load .env file
-	err := godotenv.Load()
+	err = godotenv.Load()
 	if err != nil {
 		log.Printf("Error loading .env file: %v", err)
 	}
