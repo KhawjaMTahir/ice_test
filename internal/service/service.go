@@ -1,6 +1,6 @@
 package services
 
-import "interview/pkg/repository"
+import "interview/internal/repository"
 
 type Service interface {
 	CartServiceInterface

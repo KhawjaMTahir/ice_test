@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"errors"
-	service "interview/pkg/service"
+	service "interview/internal/service"
 	"net/http"
 	"time"
 

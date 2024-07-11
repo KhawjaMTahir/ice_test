@@ -1,12 +1,12 @@
 package main
 
 import (
+	"interview/internal/controllers"
+	repo "interview/internal/repository"
+	services "interview/internal/service"
 	"interview/pkg/config"
-	"interview/pkg/controllers"
 	"interview/pkg/db"
 	"interview/pkg/middleware"
-	repo "interview/pkg/repository"
-	services "interview/pkg/service"
 
 	"github.com/gin-gonic/gin"
 )

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"interview/pkg/entity"
 
-	repo "interview/pkg/repository"
+	repo "interview/internal/repository"
 	"log"
 	"strconv"
 	"strings"
