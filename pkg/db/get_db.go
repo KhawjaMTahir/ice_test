@@ -9,8 +9,6 @@ import (
 )
 
 func GetDatabase(cfg config.Config) *gorm.DB {
-	// cfg := config.LoadConfig()
-
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		cfg.DBUsername, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
 

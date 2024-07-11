@@ -14,15 +14,7 @@ type (
 		DeleteCartItem(cartItemID int, cartID uint) error
 		GetCartItemsByCartID(cartID uint) ([]entity.CartItem, error)
 	}
-
-	// CartRepository struct {
-	// 	db *gorm.DB
-	// }
 )
-
-// func NewCartRepository(db *gorm.DB) CartRepositoryInterface {
-// 	return &CartRepository{db: db}
-// }
 
 func (r *repository) GetCartBySessionID(sessionID string) (*entity.CartEntity, error) {
 	var cartEntity entity.CartEntity

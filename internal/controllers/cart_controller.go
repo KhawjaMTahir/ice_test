@@ -3,6 +3,7 @@ package controllers
 import (
 	"errors"
 	service "interview/internal/service"
+	"log"
 	"net/http"
 	"time"
 
@@ -37,6 +38,12 @@ func (t *CartController) ShowAddItemForm(c *gin.Context) {
 func (t *CartController) AddItem(c *gin.Context) {
 	cookie, err := c.Request.Cookie("ice_session_id")
 	if err != nil || errors.Is(err, http.ErrNoCookie) || (cookie != nil && cookie.Value == "") {
+		if err != nil {
+			log.Printf("Error retrieving cookie: %v", err)
+		}
+		if cookie != nil {
+			log.Printf("Cookie value: '%s'", cookie.Value)
+		}
 		c.Redirect(302, "/")
 		return
 	}
