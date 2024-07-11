@@ -2,8 +2,6 @@ package repository
 
 import (
 	"interview/pkg/entity"
-
-	"gorm.io/gorm"
 )
 
 type (
@@ -17,16 +15,16 @@ type (
 		GetCartItemsByCartID(cartID uint) ([]entity.CartItem, error)
 	}
 
-	CartRepository struct {
-		db *gorm.DB
-	}
+	// CartRepository struct {
+	// 	db *gorm.DB
+	// }
 )
 
-func NewCartRepository(db *gorm.DB) CartRepositoryInterface {
-	return &CartRepository{db: db}
-}
+// func NewCartRepository(db *gorm.DB) CartRepositoryInterface {
+// 	return &CartRepository{db: db}
+// }
 
-func (r *CartRepository) GetCartBySessionID(sessionID string) (*entity.CartEntity, error) {
+func (r *repository) GetCartBySessionID(sessionID string) (*entity.CartEntity, error) {
 	var cartEntity entity.CartEntity
 	result := r.db.Where("status = ? AND session_id = ?", entity.CartOpen, sessionID).First(&cartEntity)
 	if result.Error != nil {
@@ -35,11 +33,11 @@ func (r *CartRepository) GetCartBySessionID(sessionID string) (*entity.CartEntit
 	return &cartEntity, nil
 }
 
-func (r *CartRepository) CreateCart(cart *entity.CartEntity) error {
+func (r *repository) CreateCart(cart *entity.CartEntity) error {
 	return r.db.Create(cart).Error
 }
 
-func (r *CartRepository) GetCartItemByCartIDAndProductName(cartID uint, productName string) (*entity.CartItem, error) {
+func (r *repository) GetCartItemByCartIDAndProductName(cartID uint, productName string) (*entity.CartItem, error) {
 	var cartItem entity.CartItem
 	result := r.db.Where("cart_id = ? AND product_name = ?", cartID, productName).First(&cartItem)
 	if result.Error != nil {
@@ -48,19 +46,19 @@ func (r *CartRepository) GetCartItemByCartIDAndProductName(cartID uint, productN
 	return &cartItem, nil
 }
 
-func (r *CartRepository) CreateCartItem(cartItem *entity.CartItem) error {
+func (r *repository) CreateCartItem(cartItem *entity.CartItem) error {
 	return r.db.Create(cartItem).Error
 }
 
-func (r *CartRepository) UpdateCartItem(cartItem *entity.CartItem) error {
+func (r *repository) UpdateCartItem(cartItem *entity.CartItem) error {
 	return r.db.Save(cartItem).Error
 }
 
-func (r *CartRepository) DeleteCartItem(cartItemID int, cartID uint) error {
+func (r *repository) DeleteCartItem(cartItemID int, cartID uint) error {
 	return r.db.Where("id = ? AND cart_id = ?", cartItemID, cartID).Delete(&entity.CartItem{}).Error
 }
 
-func (r *CartRepository) GetCartItemsByCartID(cartID uint) ([]entity.CartItem, error) {
+func (r *repository) GetCartItemsByCartID(cartID uint) ([]entity.CartItem, error) {
 	var cartItems []entity.CartItem
 	result := r.db.Where("cart_id = ?", cartID).Find(&cartItems)
 	if result.Error != nil {

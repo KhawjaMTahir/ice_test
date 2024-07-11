@@ -1,6 +1,7 @@
 package main
 
 import (
+	"interview/pkg/config"
 	"interview/pkg/controllers"
 	"interview/pkg/db"
 	"interview/pkg/middleware"
@@ -11,19 +12,20 @@ import (
 )
 
 func main() {
-	r := gin.Default()
-
+	cfg := config.LoadConfig()
 	// Initialize database
-	database := db.GetDatabase()
+	database := db.GetDatabase(cfg)
 
 	// Initialize repository
-	cartRepository := repo.NewCartRepository(database)
+	cartRepository := repo.NewRepository(database)
 
 	// Initialize services
 	cartService := services.NewService(cartRepository)
 
 	// Initialize controller
 	cartController := controllers.NewCartController(cartService)
+
+	r := gin.Default()
 
 	// Apply middleware
 	r.Use(middleware.SessionMiddleware())
